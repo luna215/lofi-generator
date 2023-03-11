@@ -1,8 +1,6 @@
 import pickle
 import numpy
 
-from .lstm import train_network
-
 from music21 import instrument, note, stream, chord
 from keras.models import Sequential
 from keras.layers import Dense
@@ -146,5 +144,4 @@ def create_midi(prediction_output):
 
 
 if __name__ == "__main__":
-    # train_network()
     generate()

@@ -116,7 +116,7 @@ def create_network(network_input, n_vocab):
 
 def train(model, network_input, network_output):
     """ train the neural network """
-    filepath = "updated-lofi-hip-hop-weights-improvement-1{epoch:02d}-{loss:.4f}.hdf5"
+    filepath = "./weights/updated-lofi-hip-hop-weights-improvement-1{epoch:02d}-{loss:.4f}.hdf5"
     checkpoint = ModelCheckpoint(
         filepath,
         monitor='loss',

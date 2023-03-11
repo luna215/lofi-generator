@@ -1,6 +1,6 @@
 import subprocess
 
-from lofi_generator import lstm
+from lofi_generator import trainer
 
 def generate_music():
     print("Generating music...")
@@ -9,4 +9,4 @@ def generate_music():
 
 def train_network():
     print("Training network...")
-    lstm.train_network()
+    trainer.train_network()
