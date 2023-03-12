@@ -14,7 +14,9 @@ music21 = "^8.1.0"
 tensorflow-macos = "2.11.0"
 
 [tool.poetry.scripts]
-main = "scripts:main"
+generate_music = "scripts:generate_music"
+train_network = "scripts:train_network"
+
 
 [build-system]
 requires = ["poetry-core"]

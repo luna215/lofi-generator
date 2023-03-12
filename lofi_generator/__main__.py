@@ -73,6 +73,7 @@ def create_network(network_input, n_vocab):
     model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
 
     # Load the weights to each node
+    # TODO: Select random file from `weights` directory
     model.load_weights('updated-lofi-hip-hop-weights-improvement-1100-1.0375.hdf5')
 
     return model
