@@ -2,7 +2,7 @@
 This module prepares midi file data and feeds it to the neural
 network for training
 """
-
+import os
 import glob
 import pickle
 import numpy
@@ -20,6 +20,7 @@ from keras.callbacks import ModelCheckpoint
 
 def train_network():
     """ Train a Neural Network to generate music """
+
     notes = get_notes()
 
     # get amount of pitch names
@@ -33,38 +34,45 @@ def train_network():
 
 def get_notes():
     """ Get all the notes and chords from the midi files in the ./midi_songs directory """
+    notes_path = "data/notes"
     notes = []
 
-    for file in glob.glob("midi_songs/*.mid"):
-        midi = converter.parse(file)
+    # TODO: Want to skip if notes already exists...
+    if os.path.isfile(notes_path):
+        # TODO: Parse notes from file
+        pass
 
-        print("Parsing %s" % file)
+    else:
+        for file in glob.glob("midi_songs/*.mid"):
+            midi = converter.parse(file)
 
-        notes_to_parse = None
+            print("Parsing %s" % file)
 
-        try: # file has instrument parts
-            s2 = instrument.partitionByInstrument(midi)
-            notes_to_parse = s2.parts[0].recurse() 
-        except: # file has notes in a flat structure
-            notes_to_parse = midi.flat.notes
+            notes_to_parse = None
 
-        for element in notes_to_parse:
-            if isinstance(element, note.Note):
-                notes.append(str(element.pitch))
-            elif isinstance(element, chord.Chord):
-                notes.append('.'.join(str(n) for n in element.normalOrder))
+            try: # file has instrument parts
+                s2 = instrument.partitionByInstrument(midi)
+                notes_to_parse = s2.parts[0].recurse() 
+            except: # file has notes in a flat structure
+                notes_to_parse = midi.flat.notes
 
-    with open('data/notes', 'wb') as filepath:
-        pickle.dump(notes, filepath)
+            for element in notes_to_parse:
+                if isinstance(element, note.Note):
+                    notes.append(str(element.pitch))
+                elif isinstance(element, chord.Chord):
+                    notes.append('.'.join(str(n) for n in element.normalOrder))
+
+        with open('data/notes', 'wb') as filepath:
+            pickle.dump(notes, filepath)
 
     return notes
 
 def prepare_sequences(notes, n_vocab):
     """ Prepare the sequences used by the Neural Network """
-    sequence_length = 32
+    sequence_length = 100
 
     # get all pitch names
-    pitchnames = sorted(set(notes))
+    pitchnames = sorted(set(item for item in notes))
 
      # create a dictionary to map pitches to integers
     note_to_int = dict((note, number) for number, note in enumerate(pitchnames))
@@ -110,7 +118,7 @@ def create_network(network_input, n_vocab):
     model.add(Dropout(0.3))
     model.add(Dense(n_vocab))
     model.add(Activation('softmax'))
-    model.compile(loss='categorical_crossentropy', optimizer='adam')
+    model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
 
     return model
 
@@ -126,4 +134,4 @@ def train(model, network_input, network_output):
     )
     callbacks_list = [checkpoint]
 
-    model.fit(network_input, network_output, epochs=100, batch_size=64, callbacks=callbacks_list)
+    model.fit(network_input, network_output, epochs=400, batch_size=128, callbacks=callbacks_list)
