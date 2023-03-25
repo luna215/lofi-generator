@@ -1,0 +1,8 @@
+{
+    "flask": {
+        "image": ":lofi-generator-api-service.lofi-generator-api.6",
+        "ports": {
+            "3000": "HTTP"
+        }
+    }
+}
